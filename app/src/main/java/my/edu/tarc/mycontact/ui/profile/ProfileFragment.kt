@@ -1,24 +1,50 @@
 package my.edu.tarc.mycontact.ui.profile
 
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import my.edu.tarc.mycontact.MainActivity
 import my.edu.tarc.mycontact.R
 import my.edu.tarc.mycontact.databinding.FragmentProfileBinding
 import my.edu.tarc.mycontact.model.Contact
+
 
 class ProfileFragment : Fragment() {
     //View Binding
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private lateinit var sharedPreferences: SharedPreferences
+
+    private lateinit var filePath : Uri //to hold file path of profile picture
+
+    //@RequiresApi(Build.VERSION_CODES.P)
+    val getContent = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result ->
+        if(result.resultCode == RESULT_OK){
+
+            /*val source: ImageDecoder.Source = ImageDecoder.createSource(context?.applicationContext!!, filePath)
+            var bitmap: Bitmap = ImageDecoder.decodeBitmap(source)*/
+
+            filePath = result.data?.data!!
+            binding.imageViewPic.setImageURI(filePath)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +61,23 @@ class ProfileFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val view = binding.root
+
+        val sharedPreferences = activity?.getPreferences(MODE_PRIVATE)
+        val name = sharedPreferences?.getString(MainActivity.NAME, "")
+        val phone = sharedPreferences?.getString(MainActivity.PHONE, "")
+
+        binding.editTextTextPersonName.setText(name)
+        binding.editTextPhone.setText(phone)
+        /* try{
+                val dir = context?.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                val file = File(dir, phone + ".jpg")
+            }*/
+        binding.imageViewPic.setOnClickListener {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.setType("image/*")
+            //register a getContent
+            getContent.launch(intent)
+        }
 
         Log.d("Profile Fragment", "OnCreateView")
         return view
@@ -90,6 +133,14 @@ class ProfileFragment : Fragment() {
             putString(MainActivity.PHONE, contact.phone)
             apply()
         }
+
+        //Write profile record to the Firebase
+        val database: DatabaseReference
+        database = Firebase.database.reference
+
+        database.child("profile").child(contact.phone).child("name").setValue(contact.name)
+        database.child("profile").child(contact.phone).child("phone").setValue(contact.phone)
+
     }
 
     override fun onDestroy() {

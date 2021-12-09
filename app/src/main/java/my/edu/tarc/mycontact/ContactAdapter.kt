@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import my.edu.tarc.mycontact.model.Contact
 
+//View Holder = holding a record
 class ContactAdapter : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
     //Cached copy of contacts
     private var contactList = emptyList<Contact>()
@@ -17,6 +18,7 @@ class ContactAdapter : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
         val textViewContact: TextView= view.findViewById(R.id.textViewContact)
     }
 
+    //This is a setter = assign data from View Model to adapter
     internal fun setContact(contact: List<Contact>){
         this.contactList = contact
         notifyDataSetChanged()
@@ -29,6 +31,7 @@ class ContactAdapter : RecyclerView.Adapter<ContactAdapter.ViewHolder>() {
         return ViewHolder(view)
     }
 
+    //Link data to a view holder
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //Get element from the dataset at this position and replace the contents of the view with that element
         holder.textViewName.text = contactList[position].name
