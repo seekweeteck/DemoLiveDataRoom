@@ -1,6 +1,7 @@
 package my.edu.tarc.mycontact
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,8 @@ import my.edu.tarc.mycontact.model.Contact
 import my.edu.tarc.mycontact.repository.ContactRepository
 
 class ContactViewModel (application: Application): AndroidViewModel(application) {
+    var picPath: String? = null
+
     //LiveData gives us updated contacts when they change
     var contactList: LiveData<List<Contact>>
     private val repository: ContactRepository

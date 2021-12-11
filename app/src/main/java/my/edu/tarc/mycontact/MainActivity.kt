@@ -95,5 +95,6 @@ class MainActivity : AppCompatActivity() {
     companion object{
         const val NAME = "my.edu.tarc.mycontact.ui.profile.name"
         const val PHONE = "my.edu.tarc.mycontact.ui.profile.phone"
+        const val PICTURE = "my.edu.tarc.mycontact.ui.profile.picture"
     }
 }
